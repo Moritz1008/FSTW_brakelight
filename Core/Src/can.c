@@ -148,6 +148,18 @@ void CAN_HandleRxMessages(void)
     	rx_timer = 0;
     	brake_pressure_front = RxData[0];
         break;
+
+      case 0x120:
+    	inverterTemp = RxData[0];
+    	for (int i=1; i<3; i++) {
+    		if (inverterTemp < RxData[i*2]) {
+    			inverterTemp = RxData[i*2];
+    		}
+    	}
+        break;
+      
+      case 0x100:
+        button = RxData[0] & 0x08;
     }
   }
 }

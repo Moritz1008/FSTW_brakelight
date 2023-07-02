@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -48,6 +49,15 @@
 uint8_t	brake_pressure_front = 0;
 uint16_t rx_timer = 0;
 uint8_t bl_state = 0;
+uint8_t inverterTemp = 0;
+uint8_t pump_state = 0;
+
+uint8_t button = 0;
+uint8_t buttonstate = 0;
+uint8_t button_old = 0;
+
+uint32_t fan_timer = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,12 +100,17 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_CAN_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   if (HAL_CAN_Start(&hcan) != HAL_OK)
   {
     Error_Handler();
   }
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  FAN_TIMER->FAN_CHANNEL = 19000-1;
+  fan_timer = HAL_GetTick();
+
   HAL_Delay(1000);
   for (int i=0; i<3; i++){
 	  HAL_GPIO_WritePin(BRAKELIGHT_LED, GPIO_PIN_SET);
@@ -114,8 +129,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_Delay(1);
+    HAL_Delay(1);
 
+    // Handle Brakelight
 	  if (brake_pressure_front > BP_THRESHOLD) {
 		  bl_state = 1;
 	  }
@@ -129,6 +145,32 @@ int main(void)
 		  brake_pressure_front = 0;
 	  }
 	  rx_timer++;
+
+    // Handle Pump
+	  if (inverterTemp > PUMP_THRESHOLD) {
+		  pump_state = 1;
+	  }
+	  if (inverterTemp < PUMP_THRESHOLD - 10){
+		  pump_state = 0;
+	  }
+    HAL_GPIO_WritePin(PUMP, pump_state);
+
+    // Handle Fan
+    if (HAL_GetTick() - fan_timer > 6000) {
+      if (pump_state) {
+        FAN_TIMER->FAN_CHANNEL = 18945;
+      } else {
+        FAN_TIMER->FAN_CHANNEL = 20000-1;
+      }
+    }
+    // if (button != button_old) {
+    //     if (button == 1) {
+    //         buttonstate = !buttonstate;
+    //     }
+    //     button_old = button;
+    // }
+
+
 
     /* USER CODE END WHILE */
 

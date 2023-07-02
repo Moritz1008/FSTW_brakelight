@@ -42,7 +42,10 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 extern uint8_t brake_pressure_front;
+extern uint8_t inverterTemp;
 extern uint16_t rx_timer;
+
+extern uint8_t button;
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -62,7 +65,16 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 #define BRAKELIGHT_LED GPIOA, GPIO_PIN_15
 #define BP_THRESHOLD 2			// * 0.5 bar
-#define RX_TIMEOUT 1000;
+#define RX_TIMEOUT 1000
+#define PUMP GPIOB, GPIO_PIN_3
+#define PUMP_THRESHOLD 35
+
+#define FAN_TIMER TIM3
+#define FAN_CHANNEL CCR1
+
+#define FAN_MAX 3000
+#define FAN_MIN 1200
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
