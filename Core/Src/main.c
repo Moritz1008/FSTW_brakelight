@@ -155,22 +155,16 @@ int main(void)
 	  }
     HAL_GPIO_WritePin(PUMP, pump_state);
 
+//    pump_state = button;
+
     // Handle Fan
     if (HAL_GetTick() - fan_timer > 6000) {
       if (pump_state) {
-        FAN_TIMER->FAN_CHANNEL = 18945;
+        FAN_TIMER->FAN_CHANNEL = 18940;
       } else {
-        FAN_TIMER->FAN_CHANNEL = 20000-1;
+        FAN_TIMER->FAN_CHANNEL = 19000-1;
       }
     }
-    // if (button != button_old) {
-    //     if (button == 1) {
-    //         buttonstate = !buttonstate;
-    //     }
-    //     button_old = button;
-    // }
-
-
 
     /* USER CODE END WHILE */
 
