@@ -156,6 +156,7 @@ void CAN_HandleRxMessages(void)
     			inverterTemp = RxData[i*2];
     		}
     	}
+      inverterTemp /= 0.7;
         break;
       
       case 0x100:
